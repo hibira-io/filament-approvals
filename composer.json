@@ -1,0 +1,72 @@
+{
+    "name": "hibira-io/filament-approvals",
+    "description": "A live Filament inbox for Laravel AI SDK tool approvals: your agent pauses before a risky tool call, your team approves, rejects or edits it, and the agent carries on, on Hibira",
+    "keywords": [
+        "filament",
+        "filamentphp",
+        "laravel",
+        "laravel-ai",
+        "ai",
+        "agents",
+        "human-in-the-loop",
+        "tool-approval",
+        "approvals",
+        "realtime",
+        "push-notifications",
+        "hibira"
+    ],
+    "homepage": "https://hibira.io",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hibira",
+            "homepage": "https://hibira.io"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/hibira-io/filament-approvals/issues",
+        "docs": "https://github.com/hibira-io/filament-approvals#readme",
+        "email": "support@hibira.io"
+    },
+    "require": {
+        "php": "^8.3",
+        "filament/filament": "^3.3|^4.0|^5.0",
+        "hibira-io/filament": "^0.2",
+        "hibira-io/laravel": "^0.1",
+        "laravel/ai": "^1.3",
+        "pusher/pusher-php-server": "^7.2"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.6",
+        "orchestra/testbench": "^10.0|^11.0",
+        "phpunit/phpunit": "^11.0|^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Hibira\\FilamentApprovals\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Hibira\\FilamentApprovals\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Hibira\\FilamentApprovals\\ApprovalsServiceProvider"
+            ]
+        },
+        "branch-alias": {
+            "dev-main": "0.1.x-dev"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
