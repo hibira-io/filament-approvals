@@ -35,6 +35,12 @@ Supports Filament 3.3, 4 and 5 on Laravel 12 and 13 (the Laravel AI SDK
 needs PHP 8.3 and Laravel 12+). Requests are stored in your own database;
 Hibira only delivers them live.
 
+## Screenshots
+
+An agent paused before a refund over \$20: approve, reject with a reason, or edit the arguments.
+
+![Approvals inbox in a Filament panel](art/inbox.jpg)
+
 ## Install
 
 ```sh
