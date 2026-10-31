@@ -1,5 +1,7 @@
 # hibira-io/filament-approvals
 
+![AI approvals inbox for Filament](art/cover.jpg)
+
 [![ci](https://github.com/hibira-io/filament-approvals/actions/workflows/ci.yml/badge.svg)](https://github.com/hibira-io/filament-approvals/actions/workflows/ci.yml)
 
 A live inbox in your [Filament](https://filamentphp.com) panel for the
