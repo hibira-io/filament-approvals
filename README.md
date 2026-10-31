@@ -197,6 +197,13 @@ All three are authorized for users who can use the panel and pass
 `authorize()`. Events carry the request id, agent and tool names only; the
 browser fetches the arguments through the panel.
 
+The channels and the `approval` event follow the
+[Hibira approvals protocol](https://github.com/hibira-io/approvals/blob/main/PROTOCOL.md),
+which the JavaScript and Python packages in
+[hibira-io/approvals](https://github.com/hibira-io/approvals) (Vercel AI SDK,
+Mastra, LangGraph, React and Vue inboxes) and the Hibira MCP server's
+`request_approval` tool speak too.
+
 ## Translations
 
 ```sh

@@ -34,7 +34,10 @@ class RecordingTest extends TestCase
 
         $events = $this->realtime->on('private-hibira-approvals.admin.inbox', 'approval');
         $this->assertCount(1, $events);
-        $this->assertSame(['id' => $request->id, 'reason' => 'requested', 'status' => 'pending', 'agent' => 'Refund Agent', 'tools' => ['IssueRefund'], 'by' => null], $events[0]['data']);
+        $data = $events[0]['data'];
+        $this->assertStringContainsString($request->id, $data['url']);
+        unset($data['url']);
+        $this->assertSame(['v' => 1, 'id' => $request->id, 'reason' => 'requested', 'status' => 'pending', 'agent' => 'Refund Agent', 'tools' => ['IssueRefund'], 'by' => null], $data);
     }
 
     public function test_the_same_pause_is_stored_once(): void
