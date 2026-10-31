@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+
+- README: cover image and screenshots.
+
 ## 0.1.0
 
 - An AI approvals page in the Filament panel for the Laravel AI SDK's tool
