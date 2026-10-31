@@ -221,20 +221,35 @@ class ApprovalDesk
         $this->toInbox($request, $status);
     }
 
-    /** Every panel with the plugin listens on its own inbox channel. */
+    /**
+     * Every panel with the plugin listens on its own inbox channel. The
+     * payload follows the Hibira approvals protocol v1
+     * (https://github.com/hibira-io/approvals/blob/main/PROTOCOL.md).
+     */
     public function toInbox(ApprovalRequest $request, string $reason, ?string $by = null): void
     {
         $tools = $request->calls->pluck('tool')->unique()->values()->all();
 
         foreach (HibiraApprovalsPlugin::panels() as $panelId => $plugin) {
             $this->realtime->trigger(HibiraApprovalsPlugin::inboxChannel($panelId, prefixed: true), 'approval', [
+                'v' => 1,
                 'id' => $request->id,
                 'reason' => $reason,
                 'status' => $request->status,
                 'agent' => $request->agentName(),
                 'tools' => $tools,
                 'by' => $by,
+                'url' => $this->requestUrl($request, $panelId),
             ]);
+        }
+    }
+
+    protected function requestUrl(ApprovalRequest $request, string $panelId): ?string
+    {
+        try {
+            return Approvals::getUrl(['request' => $request->id], panel: $panelId);
+        } catch (Throwable) {
+            return null;
         }
     }
 
