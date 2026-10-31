@@ -1,13 +1,10 @@
 # Changelog
 
-## 0.1.2
-
-- Inbox events follow the Hibira approvals protocol v1: they now carry
-  `v: 1` and the request's `url` in the panel.
-
 ## 0.1.1
 
 - README: cover image and screenshots.
+- Inbox events follow the Hibira approvals protocol v1: they now carry
+  `v: 1` and the request's `url` in the panel.
 
 ## 0.1.0
 
