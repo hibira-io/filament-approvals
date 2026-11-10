@@ -1,6 +1,6 @@
 # hibira-io/filament-approvals
 
-![AI approvals inbox for Filament](art/cover.jpg)
+<img src="art/cover.jpg" alt="AI approvals inbox for Filament" class="filament-hidden">
 
 [![ci](https://github.com/hibira-io/filament-approvals/actions/workflows/ci.yml/badge.svg)](https://github.com/hibira-io/filament-approvals/actions/workflows/ci.yml)
 
