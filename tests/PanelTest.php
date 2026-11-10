@@ -77,7 +77,12 @@ class PanelTest extends TestCase
         $this->assertTrue($this->customer->is($resumed['user']));
         $this->assertInstanceOf(Decisions::class, $resumed['decisions']);
         $this->assertTrue($resumed['decisions']->get('call_1')->isApproved());
-        $this->assertNull($resumed['channels']);
+        if (method_exists('Hibira\\Laravel\\Ai\\AgentChannel', 'user')) {
+            // With hibira-io/laravel's AI bridge, the resumed run streams to the customer's channel.
+            $this->assertSame('private-hibira-ai.user.'.$this->customer->getKey(), $resumed['channels']->name);
+        } else {
+            $this->assertNull($resumed['channels']);
+        }
 
         $reasons = array_column(array_column($this->realtime->on('private-hibira-approvals.admin.inbox'), 'data'), 'reason');
         $this->assertSame(['requested', 'decided', 'resuming', 'resumed'], $reasons);
