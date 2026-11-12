@@ -109,6 +109,97 @@ paused turn can be resumed. Prompt it as usual, with `prompt()`, `stream()`,
 **AI approvals** in your panel. Tell your user it is waiting: the response's
 `pendingApprovals`, or the `tool_approval_request` stream event.
 
+## Recipe: gate database writes
+
+An agent that answers questions from your database can run its reads by
+itself and ask a supervisor before anything changes. The reviewer sees the
+exact statement and an estimated row count, and the tool runs the statement
+it was approved with (an edit in the inbox is a new statement the reviewer
+wrote). A misjudged read fails instead of writing, because reads run in a
+read-only transaction. PostgreSQL shown; use a database user with only the
+rights the agent should have.
+
+```php
+use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Support\Facades\DB;
+use Laravel\Ai\Approvals\Approval;
+use Laravel\Ai\Concerns\InteractsWithApprovals;
+use Laravel\Ai\Contracts\Approvable;
+use Laravel\Ai\Contracts\Tool;
+use Laravel\Ai\Tools\Request;
+
+class RunSql implements Approvable, Tool
+{
+    use InteractsWithApprovals;
+
+    public function description(): string
+    {
+        return 'Run one SQL statement on the shop database. Writes wait for a supervisor.';
+    }
+
+    public function schema(JsonSchema $schema): array
+    {
+        return ['sql' => $schema->string()->required()];
+    }
+
+    protected function needsApproval(Request $request): Approval|bool
+    {
+        if (self::isRead($request['sql'])) {
+            return false;
+        }
+
+        return Approval::required('Changes about '.self::estimateRows($request['sql']).' rows.');
+    }
+
+    public function handle(Request $request): string
+    {
+        $sql = $request['sql'];
+
+        if (self::isRead($sql)) {
+            return DB::transaction(function () use ($sql) {
+                DB::statement('SET TRANSACTION READ ONLY');
+
+                return json_encode(array_slice(DB::select($sql), 0, 200));
+            });
+        }
+
+        // Only reached after a supervisor approved this exact statement.
+        return 'Changed '.DB::affectingStatement($sql).' rows.';
+    }
+
+    /** One SELECT/WITH/EXPLAIN statement, with no words that write. Anything unsure is a write. */
+    private static function isRead(string $sql): bool
+    {
+        $sql = trim($sql, " \t\n\r;");
+
+        return ! str_contains($sql, ';')
+            && preg_match('/^(SELECT|WITH|EXPLAIN|SHOW)\b/i', $sql)
+            && ! preg_match('/\b(INSERT|UPDATE|DELETE|MERGE|CREATE|ALTER|DROP|TRUNCATE|GRANT|REVOKE|COPY|CALL|INTO|ANALYZE|SET|NEXTVAL|SETVAL|FOR\s+(UPDATE|SHARE))\b/i', $sql);
+    }
+
+    /** Dry run in a transaction that is always rolled back. */
+    private static function estimateRows(string $sql): int|string
+    {
+        DB::beginTransaction();
+        try {
+            return DB::affectingStatement($sql);
+        } catch (\Throwable) {
+            return 'an unknown number of';
+        } finally {
+            DB::rollBack();
+        }
+    }
+}
+```
+
+The dry run executes the statement and rolls it back, so keep it off
+statements with side effects outside the database. For a stricter
+classifier, a SHA-256 binding of the approved statement, and the same gate
+in JavaScript or Python, see
+[`@hibira-io/approvals/sql`](https://github.com/hibira-io/approvals#gate-database-writes)
+and the guide at
+[hibira.io/use-cases/database-write-approvals](https://hibira.io/use-cases/database-write-approvals).
+
 ## Options
 
 ```php
